@@ -3,6 +3,7 @@ package org.projects.shoppinglist;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,12 +30,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Needed to get the toolbar to work on older versions
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //getting our listiew - you can check the ID in the xml to see that it
         //is indeed specified as "list"
-        listView = (ListView) findViewById(R.id.list);
+        listView = findViewById(R.id.list);
         //here we create a new adapter linking the bag and the
         //listview
         adapter =  new ArrayAdapter<>(this,
@@ -46,14 +47,12 @@ public class MainActivity extends AppCompatActivity {
         //only select one item at a time.
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-        Button addButton = (Button) findViewById(R.id.addButton);
+        Button addButton =  findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bag.add("Milk");
-                //The next line is needed in order to say to the ListView
-                //that the data has changed - we have added stuff now!
-                getMyAdapter().notifyDataSetChanged();
+                adapter.add("Milk");
+                Log.d("Bag","Items in back: "+bag.size());
             }
         });
 
