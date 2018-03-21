@@ -1,5 +1,7 @@
 package org.projects.shoppinglist;
 
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -33,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if (savedInstanceState != null) {
+            ArrayList<String> savedBag = savedInstanceState.getStringArrayList("bag");
+            if (savedBag != null) {
+                bag = savedBag;
+            }
+        }
+
         //getting our listiew - you can check the ID in the xml to see that it
         //is indeed specified as "list"
         listView = findViewById(R.id.list);
@@ -51,17 +61,32 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adapter.add("Milk");
-                Log.d("Bag","Items in back: "+bag.size());
+                addProductToBag();
             }
         });
 
-        //add some stuff to the list so we have something
-        // to show on app startup
-        bag.add("Bananas");
-        bag.add("Apples");
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Button clearListButton = findViewById(R.id.clearList);
+            clearListButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clearList();
+                }
+            });
 
+            Button deleteItemButton = findViewById(R.id.deleteItem);
+            deleteItemButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteItem();
+                    if (bag.size() <= 0) {
+                        enableButtons(false);
+                    }
+                }
+            });
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,4 +108,61 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //ALWAYS CALL THE SUPER METHOD - To be nice!
+        super.onSaveInstanceState(outState);
+		/* Here we put code now to save the state */
+		outState.putStringArrayList("bag", bag);
+        // TODO Save selected item and edittext values - if they are not saved automatically
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // INFO This method could be used to restore saved data instead of doing it in onCreate()
+        //      Require a call to adapter.notifyOnDataSetChanged().
+    }
+
+    private void addProductToBag() {
+        EditText productToAdd = findViewById(R.id.productName);
+        EditText quantityField = findViewById(R.id.quantity);
+        int quantity = Integer.parseInt(quantityField.getText().toString());
+        for (int i = 0; i < quantity; i++) {
+            adapter.add(productToAdd.getText().toString()); // "Milk");
+        }
+        productToAdd.setText("");
+        quantityField.setText("");
+
+        enableButtons(true);
+    }
+
+    private void clearList() {
+        bag.clear();
+        adapter.notifyDataSetChanged();
+
+        enableButtons(false);
+    }
+
+    private void deleteItem() {
+        ListView list = findViewById(R.id.list);
+        int indexSelected = list.getCheckedItemPosition();
+        if (indexSelected >= 0 && indexSelected < bag.size()) {
+            bag.remove(indexSelected);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private void enableButtons(boolean enabled) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Button clearButton = findViewById(R.id.clearList);
+            clearButton.setEnabled(enabled);
+            Button deleteButton = findViewById(R.id.deleteItem);
+            deleteButton.setEnabled(enabled);
+        }
+    }
+
 }
