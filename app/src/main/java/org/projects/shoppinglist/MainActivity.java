@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // TODO Implement these buttons on the Portrait layout as well
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Button clearListButton = findViewById(R.id.clearList);
             clearListButton.setOnClickListener(new View.OnClickListener() {
@@ -130,10 +131,14 @@ public class MainActivity extends AppCompatActivity {
     private void addProductToBag() {
         EditText productToAdd = findViewById(R.id.productName);
         EditText quantityField = findViewById(R.id.quantity);
-        int quantity = Integer.parseInt(quantityField.getText().toString());
-        for (int i = 0; i < quantity; i++) {
-            adapter.add(productToAdd.getText().toString()); // "Milk");
-        }
+//        int quantity = Integer.parseInt(quantityField.getText().toString());
+//        for (int i = 0; i < quantity; i++) {
+//            adapter.add(productToAdd.getText().toString()); // "Milk");
+//        }
+
+        adapter.add(quantityField.getText().toString()
+                + " " + productToAdd.getText().toString());
+
         productToAdd.setText("");
         quantityField.setText("");
 
