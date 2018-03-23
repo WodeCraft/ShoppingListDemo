@@ -8,4 +8,5 @@
     <string name="add_to_bag">Add</string>
     <string name="delete_item">Delete</string>
     <string name="clear_list">Clear</string>
+    <string name="action_clear_list">Clear list</string>
 </resources>

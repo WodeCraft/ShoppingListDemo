@@ -38,13 +38,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/quantityHint"
-                android:inputType="number" />
+                android:inputType="number"
+                android:nextFocusForward="@id/productName"
+                />
 
             <EditText
                 android:id="@+id/productName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/productHint"
+                android:nextFocusForward="@id/addButton"
                 android:text="" />
 
             <Button

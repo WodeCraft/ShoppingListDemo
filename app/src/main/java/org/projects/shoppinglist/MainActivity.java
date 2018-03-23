@@ -1,11 +1,10 @@
 package org.projects.shoppinglist;
 
-import android.arch.lifecycle.OnLifecycleEvent;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final int RESULT_CODE_PREFERENCES = 1;
 
     ArrayAdapter<String> adapter;
     ListView listView;
@@ -101,10 +101,14 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this,SettingsActivity.class);
+                startActivityForResult(intent, RESULT_CODE_PREFERENCES);
+                break;
+            case R.id.action_clearAll:
+                clearList();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -131,18 +135,19 @@ public class MainActivity extends AppCompatActivity {
     private void addProductToBag() {
         EditText productToAdd = findViewById(R.id.productName);
         EditText quantityField = findViewById(R.id.quantity);
-//        int quantity = Integer.parseInt(quantityField.getText().toString());
-//        for (int i = 0; i < quantity; i++) {
-//            adapter.add(productToAdd.getText().toString()); // "Milk");
-//        }
 
-        adapter.add(quantityField.getText().toString()
-                + " " + productToAdd.getText().toString());
+        int quantity = Integer.parseInt(quantityField.getText().toString());
+        String product = productToAdd.getText().toString();
 
-        productToAdd.setText("");
-        quantityField.setText("");
+        if (quantity > 0 && product != "") {
+            adapter.add(quantity + " " + product);
 
-        enableButtons(true);
+            productToAdd.setText("");
+            quantityField.setText("");
+
+            enableButtons(true);
+        }
+
     }
 
     private void clearList() {
