@@ -172,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
             clearButton.setEnabled(enabled);
             Button deleteButton = findViewById(R.id.deleteItem);
             deleteButton.setEnabled(enabled);
+
+
         }
     }
 
