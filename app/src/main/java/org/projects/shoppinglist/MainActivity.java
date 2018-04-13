@@ -13,15 +13,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.projects.shoppinglist.models.Product;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private final int RESULT_CODE_PREFERENCES = 1;
 
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<Product> adapter;
     ListView listView;
-    ArrayList<String> bag = new ArrayList<>();
+    ArrayList<Product> bag = new ArrayList<>();
 
     public ArrayAdapter getMyAdapter()
     {
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (savedInstanceState != null) {
-            ArrayList<String> savedBag = savedInstanceState.getStringArrayList("bag");
+            ArrayList<Product> savedBag = savedInstanceState.getParcelableArrayList("bag");
             if (savedBag != null) {
                 bag = savedBag;
             }
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         //ALWAYS CALL THE SUPER METHOD - To be nice!
         super.onSaveInstanceState(outState);
 		/* Here we put code now to save the state */
-		outState.putStringArrayList("bag", bag);
+		outState.putParcelableArrayList("bag", bag);
         // TODO Save selected item and edittext values - if they are not saved automatically
 
     }
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         String product = productToAdd.getText().toString();
 
         if (quantity > 0 && product != "") {
-            adapter.add(quantity + " " + product);
+            adapter.add(new Product(product, quantity));
 
             productToAdd.setText("");
             quantityField.setText("");
