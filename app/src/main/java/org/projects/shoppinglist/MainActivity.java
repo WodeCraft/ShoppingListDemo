@@ -8,22 +8,27 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
+import org.projects.shoppinglist.fragments.ConfirmDialogFragment;
 import org.projects.shoppinglist.models.Product;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ConfirmDialogFragment.OnPositiveListener {
 
     private final int RESULT_CODE_PREFERENCES = 1;
 
     ArrayAdapter<Product> adapter;
     ListView listView;
     ArrayList<Product> bag = new ArrayList<>();
+    String amount;
 
     public ArrayAdapter getMyAdapter()
     {
@@ -69,6 +74,27 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO Implement these buttons on the Portrait layout as well
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Spinner amountSpinner = findViewById(R.id.quantitySpinner);
+
+            ArrayAdapter<CharSequence> amountSpinnerAdapter = ArrayAdapter.createFromResource(
+                    this,
+                    R.array.quantitySpinnerArray,
+                    android.R.layout.simple_spinner_item);
+            amountSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            amountSpinner.setAdapter(amountSpinnerAdapter);
+            amountSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String[] listArray = getResources().getStringArray(R.array.quantitySpinnerArray);
+                    amount = listArray[position];
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
             Button clearListButton = findViewById(R.id.clearList);
             clearListButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,8 +148,6 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 		/* Here we put code now to save the state */
 		outState.putParcelableArrayList("bag", bag);
-        // TODO Save selected item and edittext values - if they are not saved automatically
-
     }
 
     @Override
@@ -138,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
         EditText productToAdd = findViewById(R.id.productName);
         EditText quantityField = findViewById(R.id.quantity);
 
+        // TODO Handle the value of variable "amount" to set the correct quantity!
+
         int quantity = Integer.parseInt(quantityField.getText().toString());
         String product = productToAdd.getText().toString();
 
@@ -146,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
             productToAdd.setText("");
             quantityField.setText("");
+            amount = "";
 
             enableButtons(true);
         }
@@ -153,11 +180,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clearList() {
+        ConfirmDialogFragment dialog = new ConfirmDialogFragment();
+        dialog.show(getFragmentManager(), "MyFragment");
+    }
+
+    /**
+     * This method handles positive click events from the ConfirmDialogFragment
+     */
+    @Override
+    public void onPositiveClicked() {
         bag.clear();
         adapter.notifyDataSetChanged();
-
         enableButtons(false);
     }
+
 
     private void deleteItem() {
         ListView list = findViewById(R.id.list);

@@ -9,4 +9,21 @@
     <string name="delete_item">Delete</string>
     <string name="clear_list">Clear</string>
     <string name="action_clear_list">Clear list</string>
+    <string name="dialogTitle">Confirmation</string>
+    <string name="dialogQuestion">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string-array name="quantitySpinnerArray">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
 </resources>

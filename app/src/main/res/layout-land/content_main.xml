@@ -39,6 +39,13 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/quantityHint"
                 android:inputType="number"
+                android:nextFocusForward="@id/quantitySpinner"
+                />
+
+            <Spinner
+                android:id="@+id/quantitySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:nextFocusForward="@id/productName"
                 />
 
