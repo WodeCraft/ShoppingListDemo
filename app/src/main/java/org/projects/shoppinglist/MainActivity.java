@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.projects.shoppinglist.fragments.ConfirmDialogFragment;
 import org.projects.shoppinglist.models.Product;
@@ -22,22 +23,26 @@ import org.projects.shoppinglist.models.Product;
 import java.util.ArrayList;
 
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 public class MainActivity extends AppCompatActivity implements ConfirmDialogFragment.OnPositiveListener {
 
     private final int RESULT_CODE_PREFERENCES = 1;
 
-    ArrayAdapter<Product> adapter;
+    private DatabaseReference firebase;
+
+    FirebaseListAdapter<Product> adapter;
     ListView listView;
     ArrayList<Product> bag = new ArrayList<>();
     String amount;
 
-    public ArrayAdapter getMyAdapter()
-    {
-        return adapter;
-    }
+//    public ArrayAdapter getMyAdapter()
+//    {
+//        return adapter;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +59,27 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
             }
         }
 
+        // Setting up Firebase and adapter
+        firebase = FirebaseDatabase.getInstance().getReference().child("products");
+        Query query = FirebaseDatabase.getInstance().getReference().child("products");
+
+        FirebaseListOptions<Product> options = new FirebaseListOptions.Builder<Product>()
+                .setQuery(query, Product.class)
+                .setLayout(android.R.layout.simple_list_item_checked)
+                .build();
+
+        adapter = new FirebaseListAdapter<Product>(options) {
+            @Override
+            protected void populateView(View v, Product product, int position) {
+                TextView textView = v.findViewById(android.R.id.text1);
+                textView.setTextSize(24);
+                textView.setText(product.toString());
+            }
+        };
+
         //getting our listiew - you can check the ID in the xml to see that it
         //is indeed specified as "list"
         listView = findViewById(R.id.list);
-        //here we create a new adapter linking the bag and the
-        //listview
-        adapter =  new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_checked,bag );
 
         //setting the adapter on the listview
         listView.setAdapter(adapter);
@@ -172,10 +191,13 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
         } else {
             quantity = Integer.parseInt(quantityField.getText().toString());
         }
-        String product = productToAdd.getText().toString();
+        String name = productToAdd.getText().toString();
 
-        if (quantity > 0 && product != "") {
-            adapter.add(new Product(product, quantity));
+        if (quantity > 0 && name != "") {
+            Product product = new Product(name, quantity);
+
+            firebase.push().setValue(product);
+            adapter.notifyDataSetChanged();
 
             productToAdd.setText("");
             quantityField.setText("");
@@ -222,4 +244,15 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
 }
