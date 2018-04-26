@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
 
     FirebaseListAdapter<Product> adapter;
     ListView listView;
-    ArrayList<Product> bag = new ArrayList<>();
     String amount;
 
 //    public ArrayAdapter getMyAdapter()
@@ -51,13 +50,6 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
         //Needed to get the toolbar to work on older versions
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        if (savedInstanceState != null) {
-            ArrayList<Product> savedBag = savedInstanceState.getParcelableArrayList("bag");
-            if (savedBag != null) {
-                bag = savedBag;
-            }
-        }
 
         // Setting up Firebase and adapter
         firebase = FirebaseDatabase.getInstance().getReference().child("products");
@@ -131,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
                 @Override
                 public void onClick(View v) {
                     deleteItem();
-                    if (bag.size() <= 0) {
+                    if (adapter.getCount() <= 0) {
                         enableButtons(false);
                     }
                 }
@@ -170,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
         //ALWAYS CALL THE SUPER METHOD - To be nice!
         super.onSaveInstanceState(outState);
 		/* Here we put code now to save the state */
-		outState.putParcelableArrayList("bag", bag);
     }
 
     @Override
@@ -201,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
 
             productToAdd.setText("");
             quantityField.setText("");
-            amount = "";
+            amount = "1";
 
             enableButtons(true);
         }
@@ -218,17 +209,20 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
      */
     @Override
     public void onPositiveClicked() {
-        bag.clear();
+        firebase.removeValue();
         adapter.notifyDataSetChanged();
         enableButtons(false);
     }
 
+    public Product getItem(int index) {
+        return adapter.getItem(index);
+    }
 
     private void deleteItem() {
         ListView list = findViewById(R.id.list);
         int indexSelected = list.getCheckedItemPosition();
-        if (indexSelected >= 0 && indexSelected < bag.size()) {
-            bag.remove(indexSelected);
+        if (indexSelected >= 0 && indexSelected < adapter.getCount()) {
+            adapter.getRef(indexSelected).setValue(null);
             adapter.notifyDataSetChanged();
         }
     }
@@ -239,8 +233,6 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
             clearButton.setEnabled(enabled);
             Button deleteButton = findViewById(R.id.deleteItem);
             deleteButton.setEnabled(enabled);
-
-
         }
     }
 
