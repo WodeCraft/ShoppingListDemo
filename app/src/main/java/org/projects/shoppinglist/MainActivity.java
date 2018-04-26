@@ -21,6 +21,10 @@ import org.projects.shoppinglist.models.Product;
 
 import java.util.ArrayList;
 
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MainActivity extends AppCompatActivity implements ConfirmDialogFragment.OnPositiveListener {
 
     private final int RESULT_CODE_PREFERENCES = 1;
@@ -162,9 +166,12 @@ public class MainActivity extends AppCompatActivity implements ConfirmDialogFrag
         EditText productToAdd = findViewById(R.id.productName);
         EditText quantityField = findViewById(R.id.quantity);
 
-        // TODO Handle the value of variable "amount" to set the correct quantity!
-
-        int quantity = Integer.parseInt(quantityField.getText().toString());
+        int quantity;
+        if (amount != "") {
+            quantity = Integer.parseInt(amount);
+        } else {
+            quantity = Integer.parseInt(quantityField.getText().toString());
+        }
         String product = productToAdd.getText().toString();
 
         if (quantity > 0 && product != "") {
